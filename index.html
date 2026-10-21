@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مختبر التغطية المثلى – بحوث العمليات</title>
+<meta name="description" content="محاكاة تفاعلية لمسألة تغطية المجموعات (Set Covering) لتحديد مواقع حاويات النفايات بأقل تكلفة.">
+<link rel="icon" href="assets/logo-color.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script>
+/* شعار جامعة أم القرى (مسارات نسبية لتعمل تحت أي مسار في GitHub Pages) */
+window.UQU_LOGO='assets/logo-color.png';window.UQU_LOGO_W='assets/logo-white.png';
+(function(){var d=document.documentElement;try{if(window.UQU_LOGO&&!sessionStorage.getItem('uqu-intro')){d.classList.add('intro');setTimeout(function(){d.classList.remove('intro')},8000)}}catch(e){}})();
+</script>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+<div id="intro" aria-hidden="true"><div class="lg"><img alt=""></div></div>
+<nav aria-label="القائمة الرئيسية">
+<a href="#top" class="on">الرئيسية</a><a href="#model">النموذج</a><a href="#sim">المحاكاة</a><a href="#solver">المحلل</a><a href="#sens">الحساسية</a>
+</nav>
+
+<section class="hero" id="top">
+<h1>أين نضع الحاويات<br>بأقل تكلفة؟</h1>
+<p>نمذجة مسألة تغطية المجموعات (Set Covering) لحي سكني: اختر المواقع، شاهد التغطية، ودع المحلل يثبت الحل الأمثل.</p>
+<div class="cta"><a class="btn" href="#sim">ابدأ المحاكاة</a><a class="btn sec" href="#model">اقرأ النموذج</a></div>
+<div class="stats">
+<div class="glass stat"><b id="h-z">–</b><span>التكلفة المثلى (ر.س)</span></div>
+<div class="glass stat"><b id="h-s">–</b><span>المواقع المختارة</span></div>
+<div class="glass stat"><b id="h-r">150 م</b><span>نصف قطر التغطية</span></div>
+</div>
+</section>
+
+<section id="model">
+<h2>النموذج الرياضي</h2>
+<p class="lead">ثلاثة مواقع مرشحة وأربعة مربعات سكنية. كل مربع يجب أن تغطيه حاوية واحدة على الأقل ضمن نصف القطر R.</p>
+<div class="grid2">
+<div class="glass"><h3>المجموعات والمعاملات</h3><ul>
+<li>المواقع المرشحة: <span class="m">j ∈ {S1, S2, S3}</span></li>
+<li>المربعات السكنية: <span class="m">i ∈ {A, B, C, D}</span></li>
+<li>التكلفة: <span class="m" id="m-c"></span></li>
+<li>مصفوفة التغطية: <span class="m">a<sub>ij</sub> = 1 إذا d<sub>ij</sub> ≤ R</span></li></ul></div>
+<div class="glass"><h3>متغيرات القرار والهدف</h3><ul>
+<li><span class="m">x<sub>j</sub> ∈ {0, 1}</span> ← هل نفتح الموقع j؟</li>
+<li>الهدف: <span class="m" id="m-z"></span></li></ul></div>
+<div class="glass" style="grid-column:1/-1"><h3>القيود (تتحدث مع تغيير نصف القطر)</h3><ul id="m-cons" class="grid2"></ul></div>
+</div>
+</section>
+
+<section id="sim">
+<h2>المحاكاة التفاعلية</h2>
+<p class="lead">اضغط على الموقع داخل الخريطة أو من القائمة لفتحه أو إغلاقه.</p>
+<div class="sim">
+<div class="cv"><canvas id="cv" width="600" height="420"></canvas>
+<div class="tb"><span id="tb-r"></span><button id="tg">إخفاء المسافات</button></div></div>
+<div class="side">
+<div class="glass"><h3>المواقع المرشحة</h3><div id="sbs"></div>
+<div class="row"><button class="btn" id="opt">اعرض الحل الأمثل</button><button class="btn sec" id="rs">تفريغ</button></div></div>
+<div class="glass"><h3>المؤشرات</h3>
+<div class="kv"><span>تغطية الحي</span><b id="pc">0%</b></div><div class="bar"><i id="fl"></i></div>
+<div class="kv"><span>التكلفة Z</span><b id="zv">0 ر.س</b></div>
+<div class="kv"><span>الحالة</span><span class="bd" id="bd"></span></div><div class="al" id="al"></div></div>
+<div class="glass"><h3>تحقق القيود</h3><ul class="cl" id="cl"></ul></div>
+</div></div>
+</section>
+
+<section id="solver">
+<h2>المحلل: التعداد الكامل</h2>
+<p class="lead">مع 3 مواقع هناك 2³ = 8 حالات فقط، فيمكن فحصها كلها وإثبات الأمثلية.</p>
+<div class="grid2">
+<div class="glass"><h3>خطوات الحل</h3><ol class="steps" id="st" style="padding-right:20px"></ol></div>
+<div class="glass tw"><table><thead><tr><th>x₁ x₂ x₃</th><th>التكلفة</th><th>المغطى</th><th>الحكم</th></tr></thead><tbody id="tb"></tbody></table></div>
+</div>
+</section>
+
+<section id="sens">
+<h2>تحليل الحساسية</h2>
+<p class="lead">غيّر نصف القطر أو تكلفة أي موقع وراقب متى يتبدل الحل الأمثل.</p>
+<div class="grid2">
+<div class="glass sl">
+<label><span>نصف القطر R</span><b id="rv">150 م</b></label><input type="range" id="rg" min="80" max="250" step="5" value="150">
+<label><span>تكلفة S1</span><b id="c1v"></b></label><input type="range" id="c1" min="400" max="2000" step="50" value="1000">
+<label><span>تكلفة S2</span><b id="c2v"></b></label><input type="range" id="c2" min="400" max="2000" step="50" value="1200">
+<label><span>تكلفة S3</span><b id="c3v"></b></label><input type="range" id="c3" min="400" max="2000" step="50" value="800">
+</div>
+<div class="glass"><h3>التكلفة المثلى مقابل نصف القطر</h3><svg id="ch" viewBox="0 0 600 230" dir="ltr" style="width:100%"></svg><p id="ins" style="color:var(--mu);font-size:.9rem;margin-top:8px"></p></div>
+</div>
+</section>
+<footer>مشروع بحوث العمليات · نموذج تغطية المجموعات الثنائي</footer>
+
+<script src="js/app.js"></script>
+</body>
+</html>
